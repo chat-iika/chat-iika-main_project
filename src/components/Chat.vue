@@ -31,7 +31,8 @@ export default {
   },
   methods: {
     sendChat () {
-      let app = this
+      if (this.chats.length >= 14 && !this.correction) this.chats = []
+
       if (this.message === '') return
 
       if (this.correction) {
@@ -53,7 +54,7 @@ export default {
       this.chats.push('Iika: ...')
 
       axios.post('https://pilkadangu-predictor.herokuapp.com/predict', {
-        message: app.message
+        message: this.message
       }).then(res => {
         const intent = res.data.intent
         let response = ''
@@ -65,7 +66,7 @@ export default {
           case 'candidate':
             response = 'Cagub cawagub yang Iika tau baru Ridwan Kamil ka, maaf ya :( Tapi tar Iika usahain cari lebih lagi ya ^o^ Anyway jangan lupa pilih Ridwan Kamil ya hehe'
             break
-          case 'cadidate-detail':
+          case 'candidate_detail':
             response = 'Apa kaka ingin mendapatkan informasi tentang suatu calon? Maaf tapi untuk saat ini Iika belum bisa mengetahui subjek yang kaka cari :('
             break
           case 'party':
@@ -81,12 +82,12 @@ export default {
             response = 'Iika ga ngerti maksud kaka gimana .-. Tapi coba tanya Iika yang berhubungan dengan Pilkada pasti Iika coba bantu jawab ^o^'
         }
 
-        app.chats.pop()
-        app.chats.push(`Iika: ${response}`)
-        app.chats.push('Iika: Apakah Iika menjawab dengan benar ._.? Jawab dengan Y atau T saja kaka ^o^')
-        app.correction = true
-        app.prevMessage = app.message
-        app.message = ''
+        this.chats.pop()
+        this.chats.push(`Iika: ${response}`)
+        this.chats.push('Iika: Apakah Iika menjawab dengan benar ._.? Jawab dengan Y atau T saja kaka ^o^')
+        this.correction = true
+        this.prevMessage = this.message
+        this.message = ''
       }).catch(err => console.log(err))
     }
   }
